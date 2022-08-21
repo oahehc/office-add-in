@@ -6,3 +6,9 @@
 - insert > office add-ins > upload my add-in > select the manifest.xml
 
 ps. re-upload when manifest file was changed
+
+
+## Learning Resource
+
+- Init project: https://docs.microsoft.com/en-us/office/dev/add-ins/quickstarts/excel-quickstart-jquery?tabs=yeomangenerator
+- Excel example: https://docs.microsoft.com/en-us/office/dev/add-ins/tutorials/excel-tutorial

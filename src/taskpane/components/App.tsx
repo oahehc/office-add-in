@@ -1,15 +1,16 @@
 import * as React from "react";
 import { DefaultButton } from "@fluentui/react";
-import Header from "./Header";
 import HeroList from "./HeroList";
 import Progress from "./Progress";
 
-/* global console, Excel, require, fetch  */
+/* global console, Excel, require, fetch, Office, document  */
 
 export interface AppProps {
   title: string;
   isOfficeInitialized: boolean;
 }
+
+let dialog = null;
 
 export default function App({ title, isOfficeInitialized }: AppProps) {
   const [isLoading, setLoading] = React.useState(false);
@@ -202,6 +203,21 @@ export default function App({ title, isOfficeInitialized }: AppProps) {
     });
   }
 
+  function openDialog() {
+    Office.context.ui.displayDialogAsync(
+      "https://localhost:3000/popup.html",
+      { height: 45, width: 55 },
+      function (result) {
+        dialog = result.value;
+        dialog.addEventHandler(Office.EventType.DialogMessageReceived, processMessage);
+      }
+    );
+  }
+  function processMessage(arg) {
+    document.getElementById("user-name").innerHTML = arg.message;
+    dialog.close();
+  }
+
   if (!isOfficeInitialized) {
     return (
       <Progress
@@ -213,33 +229,37 @@ export default function App({ title, isOfficeInitialized }: AppProps) {
   }
 
   return (
-    <div className="ms-welcome">
-      <HeroList message="" items={[]}>
-        <DefaultButton className="ms-welcome__action" iconProps={{ iconName: "ChevronRight" }} onClick={click}>
-          {isLoading ? "..." : "Run"}
+    <div className="ms-welcome p8">
+      <div>
+        名前：<label id="user-name"></label>
+      </div>
+      <DefaultButton className="ms-welcome__action" iconProps={{ iconName: "ChevronRight" }} onClick={click}>
+        {isLoading ? "..." : "Run"}
+      </DefaultButton>
+      <div>
+        <DefaultButton iconProps={{ iconName: "" }} onClick={createTable}>
+          Create Table
         </DefaultButton>
-        <hr />
-        <div>
-          <DefaultButton iconProps={{ iconName: "" }} onClick={createTable}>
-            Create Table
-          </DefaultButton>
-          <DefaultButton iconProps={{ iconName: "" }} onClick={filterTable}>
-            Filter Table
-          </DefaultButton>
-          <DefaultButton iconProps={{ iconName: "" }} onClick={sortTable}>
-            Sort Table
-          </DefaultButton>
-          <DefaultButton iconProps={{ iconName: "" }} onClick={freezeHeader}>
-            Freeze Header
-          </DefaultButton>
-        </div>
-        <hr />
-        <div>
-          <DefaultButton iconProps={{ iconName: "" }} onClick={createChart}>
-            Create Chart
-          </DefaultButton>
-        </div>
-      </HeroList>
+        <DefaultButton iconProps={{ iconName: "" }} onClick={filterTable}>
+          Filter Table
+        </DefaultButton>
+        <DefaultButton iconProps={{ iconName: "" }} onClick={sortTable}>
+          Sort Table
+        </DefaultButton>
+        <DefaultButton iconProps={{ iconName: "" }} onClick={freezeHeader}>
+          Freeze Header
+        </DefaultButton>
+      </div>
+      <div>
+        <DefaultButton iconProps={{ iconName: "" }} onClick={createChart}>
+          Create Chart
+        </DefaultButton>
+      </div>
+      <div>
+        <DefaultButton iconProps={{ iconName: "" }} onClick={openDialog}>
+          Open Dialog
+        </DefaultButton>
+      </div>
     </div>
   );
 }
