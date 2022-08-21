@@ -3,7 +3,7 @@
  * See LICENSE in the project root for license information.
  */
 
-/* global global, Office, self, window */
+/* global global, Office, self, window, console, Excel */
 
 Office.onReady(() => {
   // If needed, Office.js is ready to be called
@@ -27,6 +27,24 @@ function action(event: Office.AddinCommands.Event) {
   // Be sure to indicate when the add-in command function is complete
   event.completed();
 }
+async function toggleProtection(args) {
+  await Excel.run(async (context) => {
+    const sheet = context.workbook.worksheets.getActiveWorksheet();
+    sheet.load("protection/protected");
+    await context.sync();
+
+    if (sheet.protection.protected) {
+      sheet.protection.unprotect();
+    } else {
+      sheet.protection.protect();
+    }
+    await context.sync();
+  }).catch((error) => {
+    console.log("Error: " + error);
+  });
+  args.completed();
+}
+Office.actions.associate("toggleProtection", toggleProtection);
 
 function getGlobal() {
   return typeof self !== "undefined"
