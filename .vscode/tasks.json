@@ -85,7 +85,7 @@
     {
       "label": "Dev Server",
       "type": "npm",
-      "script": "dev-server",
+      "script": "dev",
       "presentation": {
         "clear": true,
         "panel": "dedicated"
